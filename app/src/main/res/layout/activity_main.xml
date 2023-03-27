@@ -27,11 +27,21 @@
         android:fontFamily="sans-serif-black"/>
 
     <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_continue"
+        android:layout_marginBottom="10dp"
+        android:text="LOGIN"
+        android:background="@drawable/shape_button02"
+        />
+
+    <Button
         android:id="@+id/btn_continue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Continue"
+        android:text="Continue without login"
         android:layout_marginBottom="18dp"
         android:textColor="@color/black"
         android:background="@drawable/shape_button01"/>

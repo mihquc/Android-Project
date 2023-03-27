@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "53222990718",
+    "project_id": "book-reading-app-9455d",
+    "storage_bucket": "book-reading-app-9455d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53222990718:android:cc3e554103ce5431ef092f",
+        "android_client_info": {
+          "package_name": "com.example.readingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53222990718-t99kj25r61i2cm14cqn6pdpipfh97rlp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCE-k5riZL7-NhcaVZhnyIkzpNEj87WXF0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53222990718-t99kj25r61i2cm14cqn6pdpipfh97rlp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

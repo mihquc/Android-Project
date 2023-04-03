@@ -18,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 
-public class CategoryAddActivity extends AppCompatActivity {
+public class    CategoryAddActivity extends AppCompatActivity {
     private ActivityCategoryAddBinding binding;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;

@@ -43,16 +43,34 @@
             android:layout_marginEnd="10dp"/>
     </RelativeLayout>
 
+<!--    search-->
+    <EditText
+        android:id="@+id/ed_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbarRl"
+        android:hint="Search..."
+        android:drawableStart="@drawable/baseline_search_24"
+        android:padding="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/white"
+        android:textColorHint="@color/gray1"/>
+
 <!--    categories-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_categories"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbarRl"
+        android:layout_above="@+id/ll_bottom"
+        android:layout_below="@+id/ed_search"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/row_category"
-        android:layout_margin="5dp"
-        android:layout_above="@+id/ll_bottom"/>
+        tools:listitem="@layout/row_category" />
 
     <LinearLayout
         android:id="@+id/ll_bottom"

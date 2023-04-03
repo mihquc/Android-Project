@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 
 import com.example.readingapp.databinding.ActivityDashboardAdminBinding;
@@ -36,6 +38,27 @@ public class DashboardAdminActivity extends AppCompatActivity {
         checkUser();
         loadCategories();
 
+        binding.edSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                try {
+                    categoryAdapter.getFilter().filter(s);
+                }
+                catch (Exception e){
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         binding.ibLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,6 +66,7 @@ public class DashboardAdminActivity extends AppCompatActivity {
                 checkUser();
             }
         });
+
         binding.btnAddCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,7 +78,7 @@ public class DashboardAdminActivity extends AppCompatActivity {
     private void loadCategories() {
         categoryList = new ArrayList<>();
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Categories");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("categories");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -64,6 +88,7 @@ public class DashboardAdminActivity extends AppCompatActivity {
                     categoryList.add(model);
                 }
                 categoryAdapter = new CategoryAdapter(DashboardAdminActivity.this, categoryList);
+                binding.rcvCategories.setAdapter(categoryAdapter);
             }
 
             @Override

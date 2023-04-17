@@ -2,18 +2,19 @@ package com.example.readingapp;
 
 import android.widget.Filter;
 
+import com.example.readingapp.adapters.AdapterPdfAdmin;
 import com.example.readingapp.adapters.CategoryAdapter;
 import com.example.readingapp.model.Category;
 
 import java.util.ArrayList;
 
-public class FilterCategory extends Filter {
-    private ArrayList<Category> filterList;
-    private CategoryAdapter categoryAdapter;
+public class FilterPdfAdmin extends Filter {
+    ArrayList<ModelPdf> filterList;
+    AdapterPdfAdmin adapterPdfAdmin;
 
-    public FilterCategory(ArrayList<Category> filterList, CategoryAdapter categoryAdapter) {
+    public FilterPdfAdmin(ArrayList<ModelPdf> filterList, AdapterPdfAdmin adapterPdfAdmin) {
         this.filterList = filterList;
-        this.categoryAdapter = categoryAdapter;
+        this.adapterPdfAdmin = adapterPdfAdmin;
     }
 
     @Override
@@ -21,9 +22,9 @@ public class FilterCategory extends Filter {
         FilterResults results = new FilterResults();
         if(constraint != null && constraint.length() > 0){
             constraint = constraint.toString().toUpperCase();
-            ArrayList<Category> modelFilter = new ArrayList<>();
+            ArrayList<ModelPdf> modelFilter = new ArrayList<>();
             for (int i=0; i<filterList.size(); i++){
-                if(filterList.get(i).getCategory().toUpperCase().contains(constraint)){
+                if(filterList.get(i).getTitle().toUpperCase().contains(constraint)){
                     modelFilter.add(filterList.get(i));
                 }
             }
@@ -40,7 +41,7 @@ public class FilterCategory extends Filter {
 
     @Override
     protected void publishResults(CharSequence constraint, FilterResults results) {
-        categoryAdapter.categoryList = (ArrayList<Category>) results.values;
-        categoryAdapter.notifyDataSetChanged();
+        adapterPdfAdmin.pdfArrayList = (ArrayList<ModelPdf>) results.values;
+        adapterPdfAdmin.notifyDataSetChanged();
     }
 }

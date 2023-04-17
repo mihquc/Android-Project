@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 
+import com.example.readingapp.adapters.CategoryAdapter;
 import com.example.readingapp.databinding.ActivityDashboardAdminBinding;
 import com.example.readingapp.model.Category;
 import com.google.firebase.auth.FirebaseAuth;

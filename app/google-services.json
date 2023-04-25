@@ -1,33 +1,34 @@
 {
   "project_info": {
-    "project_number": "53222990718",
-    "project_id": "book-reading-app-9455d",
-    "storage_bucket": "book-reading-app-9455d.appspot.com"
+    "project_number": "873425726987",
+    "firebase_url": "https://reading-app-fdfef-default-rtdb.firebaseio.com",
+    "project_id": "reading-app-fdfef",
+    "storage_bucket": "reading-app-fdfef.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:53222990718:android:cc3e554103ce5431ef092f",
+        "mobilesdk_app_id": "1:873425726987:android:4b95e54c21c23c6e17a10e",
         "android_client_info": {
           "package_name": "com.example.readingapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "53222990718-t99kj25r61i2cm14cqn6pdpipfh97rlp.apps.googleusercontent.com",
+          "client_id": "873425726987-9u2sg5eo941q08aodjrvq9f3list13e1.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCE-k5riZL7-NhcaVZhnyIkzpNEj87WXF0"
+          "current_key": "AIzaSyAXjmJZaA8P13IdUprCT9ImHgHEafz7_uE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "53222990718-t99kj25r61i2cm14cqn6pdpipfh97rlp.apps.googleusercontent.com",
+              "client_id": "873425726987-9u2sg5eo941q08aodjrvq9f3list13e1.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

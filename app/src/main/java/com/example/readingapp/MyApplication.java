@@ -180,7 +180,7 @@ public class MyApplication extends Application {
     }
 
     public static void loadCategory(String categoryId,TextView categoryTv) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Categories");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("categories");
         ref.child(categoryId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

@@ -5,6 +5,7 @@ import static com.example.readingapp.Constants.MAX_BYTES_PDF;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -30,11 +31,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 
 public class MyApplication extends Application {
+    
+    public static final String TAG_DOWNLOAD = "DOWNLOAD_TAG";
     @Override
     public void onCreate() {
         super.onCreate();
@@ -221,4 +226,96 @@ public class MyApplication extends Application {
                     }
                 });
     }
+
+    public static void downloadBook(Context context, String bookId, String bookTitle, String bookUrl){
+        Log.d(TAG_DOWNLOAD, "downloadBook: ");
+        String nameWithExtension = bookTitle + ".pdf";
+        Log.d(TAG_DOWNLOAD, "downloadBook: ");
+
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Please wait");
+        progressDialog.setMessage("Downloading "+nameWithExtension+"....");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl);
+        storageReference.getBytes(MAX_BYTES_PDF)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Log.d(TAG_DOWNLOAD, "onSuccess: ");
+                        saveDownloadBook(context, progressDialog, bytes,nameWithExtension,bookId);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG_DOWNLOAD, "onFailure: ");
+                        progressDialog.dismiss();
+                        Toast.makeText(context,"Failed to download",Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private static void saveDownloadBook(Context context, ProgressDialog progressDialog, byte[] bytes, String nameWithExtension, String bookId) {
+        Log.d(TAG_DOWNLOAD, "onSuccess: ");
+        try {
+            File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            downloadFolder.mkdir();
+            String filePath = downloadFolder.getPath() + "/" + nameWithExtension;
+            FileOutputStream out = new FileOutputStream(filePath);
+            out.write(bytes);
+            out.close();
+            Toast.makeText(context, "Saved to Download Folder",Toast.LENGTH_SHORT).show();
+            Log.d(TAG_DOWNLOAD, "saveDownloadBook: ");
+            progressDialog.dismiss();
+
+            incrementBookDownloadCount(bookId);
+        }
+        catch (Exception e){
+            Log.d(TAG_DOWNLOAD, "saveDownloadBook: ");
+            Toast.makeText(context,"Failed due to " + e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private static void incrementBookDownloadCount(String bookId) {
+        Log.d(TAG_DOWNLOAD, "incrementBookDownloadCount: ");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Books");
+        ref.child(bookId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String downloadsCount = ""+snapshot.child("downloadsCount").getValue();
+                        Log.d(TAG_DOWNLOAD, "onDataChange: ");
+                        if (downloadsCount.equals("")||downloadsCount.equals("null")){
+                            downloadsCount = "0";
+
+                        }
+                        long newDownloadsCount = Long.parseLong(downloadsCount)+1;
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        hashMap.put("downloadsCount",newDownloadsCount);
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Books");
+                        reference.child(bookId).updateChildren(hashMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Log.d(TAG_DOWNLOAD, "onSuccess: ");
+
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(TAG_DOWNLOAD, "onFail: ");
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
 }

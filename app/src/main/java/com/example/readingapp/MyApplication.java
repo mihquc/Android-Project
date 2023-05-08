@@ -1,10 +1,12 @@
 package com.example.readingapp;
 
+import static android.content.ContentValues.TAG;
 import static com.example.readingapp.Constants.MAX_BYTES_PDF;
 
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -14,13 +16,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.readingapp.adapters.AdapterPdfAdmin;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,11 +32,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 
 public class MyApplication extends Application {
+    private static final String TAG_DOWNLOAD = "DOWNLOAD_TAG";
     @Override
     public void onCreate() {
         super.onCreate();
@@ -220,5 +225,103 @@ public class MyApplication extends Application {
 
                     }
                 });
+    }
+
+    public static void downloadBook(Context context, String bookId, String bookTitle, String bookUrl){
+        Log.d(TAG_DOWNLOAD, "downloadBook: downloading book...");
+        String nameWithExtension = bookTitle + ".pdf";
+        Log.d(TAG_DOWNLOAD, "downloadBook: NAME: "+ nameWithExtension);
+
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Please wait...");
+        progressDialog.setMessage("Downloading"+ nameWithExtension +"...");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(bookUrl);
+        storageReference.getBytes(MAX_BYTES_PDF)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Log.d(TAG_DOWNLOAD, "onSuccess: Book Downloaded");
+                        Log.d(TAG_DOWNLOAD, "onSuccess: Saving book...");
+                        saveDownloadedBook(context, progressDialog, bytes, nameWithExtension, bookId);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG_DOWNLOAD, "onFailure: Failed to download due to "+e.getMessage());
+                        progressDialog.dismiss();
+                        Toast.makeText(context, "onFailure: Failed to download due to "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private static void saveDownloadedBook(Context context, ProgressDialog progressDialog, byte[] bytes, String nameWithExtension, String bookId) {
+        Log.d(TAG_DOWNLOAD, "saveDownloadedBook: Saving download book");
+        try{
+            File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            downloadFolder.mkdirs();
+
+            String filePath = downloadFolder.getPath() + "/" + nameWithExtension;
+            FileOutputStream out = new FileOutputStream(filePath);
+            out.write(bytes);
+            out.close();
+
+            Toast.makeText(context, "Saved to download folder", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "saveDownloadedBook: Saved to download Folder");
+            progressDialog.dismiss();
+
+            incrementBookDownloadCount(bookId);
+        }catch (Exception e){
+            Log.d(TAG, "saveDownloadedBook: Failed saving to download folder due to "+e.getMessage());
+            Toast.makeText(context, "Failed saving to download folder due to "+e.getMessage(), Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+
+        }
+    }
+
+    private static void incrementBookDownloadCount(String bookId) {
+        Log.d(TAG_DOWNLOAD, "incrementBookDownloadCount: Incrementing Book Download Count");
+
+        // step1 : get previous download count
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Books");
+        ref.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String downloadsCount = ""+snapshot.child("downloadsCount").getValue();
+                Log.d(TAG_DOWNLOAD, "onDataChange: Download count "+downloadsCount);
+
+                if(downloadsCount.equals("") || downloadsCount.equals(null)){
+                    downloadsCount = "0";
+                }
+
+                long newDownloadsCount = Long.parseLong(downloadsCount) + 1;
+                Log.d(TAG_DOWNLOAD, "onDataChange: New Download Count"+ newDownloadsCount);
+
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("downloadsCount", newDownloadsCount);
+
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Books");
+                reference.child(bookId).updateChildren(hashMap)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.d(TAG_DOWNLOAD, "onSuccess: Downloads Count Update...");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG_DOWNLOAD, "onFailure: Failed to update Downloads Count due to "+e.getMessage());
+                            }
+                        });
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

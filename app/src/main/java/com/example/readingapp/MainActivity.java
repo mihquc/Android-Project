@@ -29,8 +29,10 @@ public class MainActivity extends AppCompatActivity {
         binding.btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(MainActivity.this, DashboardUserActivity.class));
             }
         });
+
+
     }
 }

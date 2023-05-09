@@ -1,6 +1,7 @@
 package com.example.readingapp;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.readingapp.databinding.ActivityPdfDetailBinding;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +28,12 @@ public class PdfDetailActivity extends AppCompatActivity {
     private static final String TAG_DOWNLOAD = "DOWNLOAD_TAG";
 
     String bookId, bookTitle, bookUrl;
+    boolean isInMyFavorite = false;
+
+    private FirebaseAuth firebaseAuth;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +44,10 @@ public class PdfDetailActivity extends AppCompatActivity {
         bookId = intent.getStringExtra("bookId");
 
         binding.downloadBookBtn.setVisibility(View.GONE);
+        firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null){
+            checkIsFavorite();
+        }
 
         loadBookDetails();
 
@@ -72,6 +84,21 @@ public class PdfDetailActivity extends AppCompatActivity {
                 }
             }
         });
+        binding.favoriteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (firebaseAuth.getCurrentUser() == null){
+                    Toast.makeText(PdfDetailActivity.this, "You're not logged in", Toast.LENGTH_SHORT).show();
+                } else  {
+                    if (isInMyFavorite){
+                        MyApplication.removeFromFavorite(PdfDetailActivity.this, bookId);
+                    }
+                    else {
+                        MyApplication.addToFavorite(PdfDetailActivity.this, bookId);
+                    }
+                }
+            }
+        });
 
     }
     private ActivityResultLauncher<String> requestPermissionLauncher =
@@ -105,8 +132,10 @@ public class PdfDetailActivity extends AppCompatActivity {
                         String date = MyApplication.formatTimestamp(Long.parseLong(timestamp));
 
                         MyApplication.loadCategory(""+categoryId,binding.categoryTv);
-                        MyApplication.loadPdfFromUrlSinglePage(""+bookUrl,""+bookTitle,binding.pdfView,binding.progressBar);
+                        MyApplication.loadPdfFromUrlSinglePage(""+bookUrl,""+bookTitle,binding.pdfView,binding.progressBar, binding.pagesTv);
                         MyApplication.loadPdfSize(""+bookUrl, ""+bookTitle,binding.sizeTv);
+
+
                         binding.titleTv.setText(bookTitle);
                         binding.descriptionTv.setText(description);
                         binding.viewsTv.setText(viewsCount.replace("null","N/A"));
@@ -119,5 +148,30 @@ public class PdfDetailActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private void checkIsFavorite(){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseAuth.getUid()).child("Favorites").child(bookId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        isInMyFavorite = snapshot.exists();
+                        if (isInMyFavorite){
+                            binding.favoriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_baseline_favorite_white,0,0);
+                            binding.favoriteBtn.setText("Remove Favorite");
+                        }
+                        else {
+                            binding.favoriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_baseline_favorite_border_white,0,0);
+                            binding.favoriteBtn.setText("Add Favorite");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
     }
 }

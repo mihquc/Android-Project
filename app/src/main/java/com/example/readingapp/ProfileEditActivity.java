@@ -38,11 +38,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.HashMap;
 
-import io.grpc.Context;
 
 public class ProfileEditActivity extends AppCompatActivity {
 

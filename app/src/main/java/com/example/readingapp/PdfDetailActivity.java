@@ -19,9 +19,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.readingapp.adapters.AdapterComment;
 import com.example.readingapp.adapters.AdapterPdfFavorite;
 import com.example.readingapp.databinding.ActivityPdfDetailBinding;
 import com.example.readingapp.databinding.DialogCommentAddBinding;
+import com.example.readingapp.model.ModelComment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,7 +45,8 @@ public class PdfDetailActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
-
+    private ArrayList<ModelComment> commentArrayList;
+    private AdapterComment adapterComment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +67,7 @@ public class PdfDetailActivity extends AppCompatActivity {
         }
 
         loadBookDetails();
-
+        loadComments();
         MyApplication.incrementBookViewCount(bookId);
 
 
@@ -127,6 +130,29 @@ public class PdfDetailActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void loadComments() {
+        commentArrayList = new ArrayList<>();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Books");
+        ref.child(bookId).child("Comments")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        commentArrayList.clear();
+                        for(DataSnapshot ds: snapshot.getChildren()){
+                            ModelComment model = ds.getValue(ModelComment.class);
+                            commentArrayList.add(model);
+                        }
+                        adapterComment = new AdapterComment(PdfDetailActivity.this, commentArrayList);
+                        binding.commentsRv.setAdapter(adapterComment);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 
     private String comment = "";

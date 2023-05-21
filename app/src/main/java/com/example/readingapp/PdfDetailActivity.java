@@ -129,7 +129,6 @@ public class PdfDetailActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     private void loadComments() {

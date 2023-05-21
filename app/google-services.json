@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "531870047633",
-    "project_id": "reading-app-6d122",
-    "storage_bucket": "reading-app-6d122.appspot.com"
+    "project_number": "887041031749",
+    "project_id": "book-app-aec39",
+    "storage_bucket": "book-app-aec39.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:531870047633:android:d5ad6a54fa6845b4c44e30",
+        "mobilesdk_app_id": "1:887041031749:android:5c134236fa6c19e77a2d2c",
         "android_client_info": {
           "package_name": "com.example.readingapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "531870047633-t69j03a9gcf78gac4sunkjr58053ukgc.apps.googleusercontent.com",
+          "client_id": "887041031749-6abop9f8ramgk3s0ig8ohsk15ps6u2fo.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBqiil_x3YGaNriyzWPMN4ucM9MkSW7QBY"
+          "current_key": "AIzaSyD00NXoBSv_mkA6VhHjMPDVG9Fe45q8MXw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "531870047633-t69j03a9gcf78gac4sunkjr58053ukgc.apps.googleusercontent.com",
+              "client_id": "887041031749-6abop9f8ramgk3s0ig8ohsk15ps6u2fo.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
